@@ -8,6 +8,8 @@ class Books {
   final double price;
   final String title;
   final String id;
+  final String commentary;
 
-  Books(this.author, this.condition, this.edition, this.isbn10, this.isbn13, this.owner, this.price, this.title, this.id);
+  Books(this.author, this.condition, this.edition, this.isbn10, this.isbn13,
+      this.owner, this.price, this.title, this.id, this.commentary);
 }

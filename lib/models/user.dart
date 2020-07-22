@@ -5,6 +5,7 @@ class User {
   final String lastname;
   final double rating;
   final int reviewCount;
+  
 
   User(this.uid, this.username, this.firstname, this.lastname, this.rating, this.reviewCount);
 }

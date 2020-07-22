@@ -115,7 +115,7 @@ class _ExplorePageState extends State<ExplorePage> {
 sendToNewPage(BuildContext context, String book, List<String> distincts) {
   for (var bookTitle in distincts) {
     if (bookTitle.toLowerCase().trim() == book) {
-      Navigator.of(context).push(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
             builder: (context) => BookListView(bookTitle: bookTitle)),
       );

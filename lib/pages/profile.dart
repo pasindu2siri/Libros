@@ -104,7 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 Widget createProfile(AsyncSnapshot asyncSnapshot) {
-  double userRating = asyncSnapshot.data['rating'];
+  double userRating = asyncSnapshot.data['rating'].toDouble();
   TextStyle _nameTextStyle = TextStyle(
     fontFamily: 'Roboto',
     color: Colors.black,

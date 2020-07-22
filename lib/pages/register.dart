@@ -100,7 +100,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> addToDatabase(userId) async {
     //User user = new User(userId, userNameInputController.text, firstNameInputController.text, lastNameInputController.text);
     User user = new User(userId, userNameInputController.text,
-        firstNameInputController.text, lastNameInputController.text, 0.0,0);
+        firstNameInputController.text, lastNameInputController.text, 0.0, 0);
     await Firestore.instance.collection('Users').document(userId).setData({
       'id': user.uid,
       'username': user.username,
@@ -109,6 +109,8 @@ class _RegisterPageState extends State<RegisterPage> {
       'rating': user.rating,
       'reviewCount': user.reviewCount
     });
+
+    await Firestore.instance.collection('Cart').add({"Owner": user.uid});
   }
 
   Future<void> validateAndSubmit() async {
