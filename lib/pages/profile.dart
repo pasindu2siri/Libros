@@ -17,7 +17,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
     return Scaffold(
         appBar: AppBar(
           title: Text('Account Details'),
@@ -181,20 +180,22 @@ Widget createUserReviews(AsyncSnapshot asyncSnapshot) {
         color: Colors.grey,
       )),
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             ConditionalBuilder(
                 condition: (reviews.length != 0),
                 builder: (context) => Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Container(
-                          child: Text('Reviews', style: _nameTextStyle),
-                        ),
-                        Container(
-                          child: Text(
-                              "''" + reviews[0]['review'].toString() + "''"),
-                        ),
+                        Text('Reviews', style: _nameTextStyle),
+                        for (var item in reviews)
+                          SizedBox(
+                              width: 360,
+                              child: Text(
+                                  "''" + item['review'].toString() + "''",
+                                  overflow: TextOverflow.ellipsis)),
                       ],
                     ))
           ]));
@@ -237,94 +238,28 @@ Widget createUserBooks(AsyncSnapshot asyncSnapshot, double width) {
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             children: <Widget>[
-                              Container(
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.blueAccent)),
-                                child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Container(
-                                              child: Text(books[0]['Title']
-                                                  .toString())),
-                                          Container(
-                                              child: Text('-' +
-                                                  books[0]['Author']
-                                                      .toString())),
-                                        ])),
-                              ),
-                              Container(
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.blueAccent)),
-                                child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Container(
-                                              child: Text(books[0]['Title']
-                                                  .toString())),
-                                          Container(
-                                              child: Text('-' +
-                                                  books[0]['Author']
-                                                      .toString())),
-                                        ])),
-                              ),
-                              Container(
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.blueAccent)),
-                                child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Container(
-                                              child: Text(books[0]['Title']
-                                                  .toString())),
-                                          Container(
-                                              child: Text('-' +
-                                                  books[0]['Author']
-                                                      .toString())),
-                                        ])),
-                              ),
-                              Container(
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.blueAccent)),
-                                child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Container(
-                                              child: Text(books[0]['Title']
-                                                  .toString())),
-                                          Container(
-                                              child: Text('-' +
-                                                  books[0]['Author']
-                                                      .toString())),
-                                        ])),
-                              )
+                              for (var item in books)
+                                Container(
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: Colors.blueAccent)),
+                                  child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Container(
+                                                child: Text(
+                                                    item['Title'].toString())),
+                                            Container(
+                                                child: Text('-' +
+                                                    item['Author'].toString())),
+                                          ])),
+                                ),
                             ],
                           ))
                     ]))
@@ -334,10 +269,6 @@ Widget createUserBooks(AsyncSnapshot asyncSnapshot, double width) {
 Widget createItemList(double width) {
   return Container(
       height: 70,
-      decoration: BoxDecoration(
-          border: Border.all(
-        color: Colors.grey,
-      )),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -350,6 +281,17 @@ Widget createItemList(double width) {
                 onPressed: () {},
               ),
               Text('Loved Items'),
+            ],
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.shopping_cart),
+                color: Colors.black,
+                onPressed: () {},
+              ),
+              Text('My Cart'),
             ],
           ),
         ],

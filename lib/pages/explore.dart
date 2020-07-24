@@ -1,6 +1,6 @@
-import 'package:Libros/models/books.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:Libros/pages/bookListView.dart';
 
 class ExplorePage extends StatefulWidget {
@@ -112,12 +112,17 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 }
 
-sendToNewPage(BuildContext context, String book, List<String> distincts) {
+sendToNewPage(BuildContext context, String book, List<String> distincts) async{
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseUser user = await _auth.currentUser();
+  String uid = user.uid.toString();
+
   for (var bookTitle in distincts) {
     if (bookTitle.toLowerCase().trim() == book) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-            builder: (context) => BookListView(bookTitle: bookTitle)),
+            builder: (context) => BookListView(bookTitle: bookTitle, uid: uid)),
       );
     }
   }

@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter_star_rating/flutter_star_rating.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BookView extends StatelessWidget {
   final String id;
@@ -16,6 +17,7 @@ class BookView extends StatelessWidget {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(bookTitle),
+        actions: <Widget>[],
       ),
       body: Column(
         children: <Widget>[
@@ -34,7 +36,7 @@ class BookView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           displayBook(snapshot),
-                          bookDetailsOne(snapshot),                          
+                          bookDetailsOne(snapshot),
                         ],
                       );
                     }
@@ -80,7 +82,7 @@ class BookView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                           authorCommentary(snapshot),                         
+                          authorCommentary(snapshot),
                         ],
                       );
                     }
@@ -98,20 +100,9 @@ class BookView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   IconButton(
-                    icon: Icon(Icons.shopping_cart),
-                    color: Colors.black,
-                    onPressed: () {},
-                  ),
-                  Text('Add to Cart'),
-                ],
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  IconButton(
                     icon: Icon(Icons.favorite),
                     color: Colors.red,
-                    onPressed: () {},
+                    onPressed: () => addToLoved(id),
                   ),
                   Text('Loved Items'),
                 ],
@@ -120,11 +111,11 @@ class BookView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   IconButton(
-                    icon: Icon(Icons.shopping_basket),
+                    icon: Icon(Icons.shopping_cart),
                     color: Colors.black,
-                    onPressed: () {},
+                    onPressed: () => addToCart(id),
                   ),
-                  Text('Buy Book'),
+                  Text('Add to Cart'),
                 ],
               ),
             ],
@@ -170,9 +161,8 @@ Widget displayBook(AsyncSnapshot snapshot) {
 }
 
 Widget bookDetailsOne(AsyncSnapshot snapshot) {
-  
   return Container(
-          child: Row(
+      child: Row(
     children: <Widget>[
       Expanded(
           child: Column(
@@ -196,7 +186,6 @@ Widget authorDetails(AsyncSnapshot snapshot) {
   double userRating = snapshot.data['rating'];
 
   return Container(
-    
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
@@ -223,23 +212,43 @@ Widget authorDetails(AsyncSnapshot snapshot) {
   );
 }
 
-
-
 Widget authorCommentary(AsyncSnapshot snapshot) {
   return Container(
-   decoration: BoxDecoration(
+      decoration: BoxDecoration(
           border: Border.all(
         color: Colors.grey,
       )),
       child: Row(
-    children: <Widget>[
-      Expanded(
-          child: Column(
         children: <Widget>[
-          Text('Seller Notes'),
-          Text('-' + snapshot.data['Commentary']),
+          Expanded(
+              child: Column(
+            children: <Widget>[
+              Text('Seller Notes'),
+              Text('-' + snapshot.data['Commentary']),
+            ],
+          )),
         ],
-      )),
-    ],
-  ));
+      ));
+}
+
+addToCart(String id) async {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseUser user = await _auth.currentUser();
+
+  await Firestore.instance.collection('Cart').document(user.uid).setData({
+    id: id,
+  }, merge: true).then((_) {
+    print('Success');
+  });
+}
+
+addToLoved(String id) async {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseUser user = await _auth.currentUser();
+
+  await Firestore.instance.collection('Loved').document(user.uid).setData({
+    id: id,
+  }, merge: true).then((_) {
+    print('Success');
+  });
 }

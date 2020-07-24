@@ -1,19 +1,30 @@
 import 'package:Libros/pages/bookView.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:Libros/pages/explore.dart';
+import 'package:conditional_builder/conditional_builder.dart';
 
 class BookListView extends StatelessWidget {
   // Declare a field that holds the Person data
   final String bookTitle;
+  final String uid;
 
   // In the constructor, require a Person
-  BookListView({Key key, @required this.bookTitle}) : super(key: key);
+  BookListView({Key key, @required this.bookTitle, this.uid}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
           title: new Text('Libros'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => ExplorePage()),
+              ),
+            ),
+          ],
         ),
         body: Column(children: <Widget>[
           Container(
@@ -26,7 +37,7 @@ class BookListView extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   } else {
-                    return displayBooks(snapshot);
+                    return displayBooks(snapshot, uid);
                   }
                 } else if (snapshot.hasError) {
                   return Text('no data');
@@ -55,11 +66,10 @@ Future<List<Map<String, dynamic>>> createBuyableBooks(String bookTitle) async {
     return docSnapshot.data;
   }).toList();
 
-
   return list;
 }
 
-Widget displayBooks(AsyncSnapshot asyncSnapshot) {
+Widget displayBooks(AsyncSnapshot asyncSnapshot, String uid) {
   List<Map<String, dynamic>> books = asyncSnapshot.data ?? [];
 
   return Container(
@@ -97,30 +107,31 @@ Widget displayBooks(AsyncSnapshot asyncSnapshot) {
                     alignment: FractionalOffset.topLeft,
                   ),
                   new Divider(
-                    color: Colors.red[300],
+                    color: Colors.red,
                   ),
                   new Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                     children: <Widget>[
-                      new Text("Price: \$" + books[index]['Price'].toString()),
-                      new FlatButton(
-                          onPressed: () {},
-                          child: IconButton(
-                              icon: Icon(Icons.favorite),
-                              color: Colors.red,
-                              onPressed: () => {})),
-                      new FlatButton(
-                        child: new Text(
-                          "View Book",
-                          style: new TextStyle(color: Colors.black),
-                        ),
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => BookView(
-                                  id: books[index]['id'].toString(),
-                                  bookTitle: books[index]['Title'].toString())),
-                        ),
-                      )
+                      new Text(
+                            "Price: \$" + books[index]['Price'].toString()),
+                      new Container(
+                          child: ConditionalBuilder(
+                              condition: (uid != books[index]['Owner']),
+                              builder: (context) => Container(
+                                      child: new FlatButton(
+                                    child: new Text(
+                                      "View Book",
+                                      style: new TextStyle(color: Colors.black),
+                                    ),
+                                    onPressed: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) => BookView(
+                                              id: books[index]['id'].toString(),
+                                              bookTitle: books[index]['Title']
+                                                  .toString())),
+                                    ),
+                                  )))),
                     ],
                   ),
                 ],
