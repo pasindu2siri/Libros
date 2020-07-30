@@ -1,3 +1,4 @@
+import 'package:Libros/pages/loved.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +97,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             Container(
                 padding: EdgeInsets.all(16.0),
-                child: Column(children: <Widget>[createItemList(width)]))
+                child:
+                    Column(children: <Widget>[createItemList(context, width)]))
           ],
         ));
   }
@@ -266,7 +268,7 @@ Widget createUserBooks(AsyncSnapshot asyncSnapshot, double width) {
       ]));
 }
 
-Widget createItemList(double width) {
+Widget createItemList(BuildContext context, double width) {
   return Container(
       height: 70,
       child: Row(
@@ -276,10 +278,10 @@ Widget createItemList(double width) {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.favorite),
-                color: Colors.red,
-                onPressed: () {},
-              ),
+                  icon: Icon(Icons.favorite),
+                  color: Colors.red,
+                  onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => LovedPage()))),
               Text('Loved Items'),
             ],
           ),

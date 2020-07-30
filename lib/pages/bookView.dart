@@ -17,7 +17,6 @@ class BookView extends StatelessWidget {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(bookTitle),
-        actions: <Widget>[],
       ),
       body: Column(
         children: <Widget>[
@@ -93,33 +92,29 @@ class BookView extends StatelessWidget {
                 }),
           ),
           Container(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.favorite),
-                    color: Colors.red,
-                    onPressed: () => addToLoved(id),
-                  ),
-                  Text('Loved Items'),
-                ],
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.shopping_cart),
-                    color: Colors.black,
-                    onPressed: () => addToCart(id),
-                  ),
-                  Text('Add to Cart'),
-                ],
-              ),
-            ],
-          ))
+            child: FutureBuilder(
+                future: getLovedList(id),
+                builder: (BuildContext context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          listAddition(snapshot, id),
+                        ],
+                      );
+                    }
+                  } else if (snapshot.hasError) {
+                    return Text('no data');
+                  }
+                  return CircularProgressIndicator();
+                }),
+          ),
         ],
       ),
     );
@@ -143,6 +138,24 @@ Future<DocumentSnapshot> getAuthorSnapshot(String id) async {
       .get();
 
   return snapshot;
+}
+
+Future<bool> getLovedList(String id) async {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseUser user = await _auth.currentUser();
+
+  DocumentSnapshot snapshot = await Firestore.instance
+      .collection('Users')
+      .document(user.uid)
+      .collection('Lists')
+      .document('Loved')
+      .get();
+
+  if (snapshot.data.containsKey(id)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 Widget displayBook(AsyncSnapshot snapshot) {
@@ -184,7 +197,6 @@ Widget bookDetailsOne(AsyncSnapshot snapshot) {
 
 Widget authorDetails(AsyncSnapshot snapshot) {
   double userRating = snapshot.data['rating'];
-
   return Container(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -231,24 +243,72 @@ Widget authorCommentary(AsyncSnapshot snapshot) {
       ));
 }
 
-addToCart(String id) async {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseUser user = await _auth.currentUser();
-
-  await Firestore.instance.collection('Cart').document(user.uid).setData({
-    id: id,
-  }, merge: true).then((_) {
-    print('Success');
-  });
+Widget listAddition(AsyncSnapshot snapshot, String id) {
+  return Container(
+      child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: <Widget>[
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ConditionalBuilder(
+              condition: (snapshot.data == true),
+              builder: (context) => Container(
+                  child: IconButton(
+                      icon: Icon(Icons.favorite),
+                      color: Colors.red,
+                      onPressed: () => {removeFromLoved(id)}))),
+          ConditionalBuilder(
+              condition: (snapshot.data == false),
+              builder: (context) => Container(
+                  child: IconButton(
+                      icon: Icon(Icons.favorite_border),
+                      color: Colors.red,
+                      onPressed: () => addToLoved(id)))),
+        ],
+      ),
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            color: Colors.black,
+            onPressed: () => {},
+          ),
+          Text('Add to Cart'),
+        ],
+      ),
+    ],
+  ));
 }
 
 addToLoved(String id) async {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseUser user = await _auth.currentUser();
 
-  await Firestore.instance.collection('Loved').document(user.uid).setData({
+  await Firestore.instance
+      .collection('Users')
+      .document(user.uid)
+      .collection('Lists')
+      .document('Loved')
+      .setData({
     id: id,
   }, merge: true).then((_) {
+    print('Success');
+  });
+}
+
+removeFromLoved(String id) async {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseUser user = await _auth.currentUser();
+  String uid = user.uid.toString();
+
+  await Firestore.instance
+      .collection('Users')
+      .document(uid)
+      .collection('Lists')
+      .document('Loved')
+      .updateData({id: FieldValue.delete()}).then((_) {
     print('Success');
   });
 }

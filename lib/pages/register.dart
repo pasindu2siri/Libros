@@ -110,15 +110,15 @@ class _RegisterPageState extends State<RegisterPage> {
       'reviewCount': user.reviewCount
     });
 
-   await Firestore.instance
-        .collection('Loved')
-        .document(user.uid)
-        .setData({"Owner": user.uid});
+    // await Firestore.instance
+    //     .collection('User')
+    //     .document(user.uid)
+    //     .collection('Loved');
 
-    await Firestore.instance
-        .collection('Cart')
-        .document(user.uid)
-        .setData({"Owner": user.uid});
+    // await Firestore.instance
+    //     .collection('User')
+    //     .document(user.uid)
+    //     .collection('Cart');
   }
 
   Future<void> validateAndSubmit() async {

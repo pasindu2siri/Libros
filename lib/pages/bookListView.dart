@@ -1,7 +1,6 @@
 import 'package:Libros/pages/bookView.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:Libros/pages/explore.dart';
 import 'package:conditional_builder/conditional_builder.dart';
 
 class BookListView extends StatelessWidget {
@@ -17,14 +16,6 @@ class BookListView extends StatelessWidget {
     return new Scaffold(
         appBar: new AppBar(
           title: new Text('Libros'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => ExplorePage()),
-              ),
-            ),
-          ],
         ),
         body: Column(children: <Widget>[
           Container(
@@ -72,7 +63,7 @@ Future<List<Map<String, dynamic>>> createBuyableBooks(String bookTitle) async {
 Widget displayBooks(AsyncSnapshot asyncSnapshot, String uid) {
   List<Map<String, dynamic>> books = asyncSnapshot.data ?? [];
 
-  return Container(
+  return Expanded(
       child: ListView.builder(
           shrinkWrap: true,
           itemCount: books.length,
@@ -110,11 +101,9 @@ Widget displayBooks(AsyncSnapshot asyncSnapshot, String uid) {
                     color: Colors.red,
                   ),
                   new Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      new Text(
-                            "Price: \$" + books[index]['Price'].toString()),
+                      new Text("Price: \$" + books[index]['Price'].toString()),
                       new Container(
                           child: ConditionalBuilder(
                               condition: (uid != books[index]['Owner']),

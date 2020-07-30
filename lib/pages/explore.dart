@@ -120,7 +120,7 @@ sendToNewPage(BuildContext context, String book, List<String> distincts) async{
 
   for (var bookTitle in distincts) {
     if (bookTitle.toLowerCase().trim() == book) {
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).push(
         MaterialPageRoute(
             builder: (context) => BookListView(bookTitle: bookTitle, uid: uid)),
       );
