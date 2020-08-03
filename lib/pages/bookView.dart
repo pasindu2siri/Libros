@@ -151,11 +151,12 @@ Future<bool> getLovedList(String id) async {
       .document('Loved')
       .get();
 
-  if (snapshot.data.containsKey(id)) {
-    return true;
-  } else {
+  if (snapshot.data == null) {
     return false;
+  } else {
+    return true;
   }
+
 }
 
 Widget displayBook(AsyncSnapshot snapshot) {
@@ -196,7 +197,7 @@ Widget bookDetailsOne(AsyncSnapshot snapshot) {
 }
 
 Widget authorDetails(AsyncSnapshot snapshot) {
-  double userRating = snapshot.data['rating'];
+  double userRating = snapshot.data['rating'].toDouble();
   return Container(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -273,9 +274,9 @@ Widget listAddition(AsyncSnapshot snapshot, String id) {
           IconButton(
             icon: Icon(Icons.shopping_cart),
             color: Colors.black,
-            onPressed: () => {},
+            onPressed: () => addToCart(id),
           ),
-          Text('Add to Cart'),
+          //Text('Add to Cart'),
         ],
       ),
     ],
@@ -309,6 +310,22 @@ removeFromLoved(String id) async {
       .collection('Lists')
       .document('Loved')
       .updateData({id: FieldValue.delete()}).then((_) {
+    print('Success');
+  });
+}
+
+addToCart(String id) async {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseUser user = await _auth.currentUser();
+
+  await Firestore.instance
+      .collection('Users')
+      .document(user.uid)
+      .collection('Lists')
+      .document('Cart')
+      .setData({
+    id: id,
+  }, merge: true).then((_) {
     print('Success');
   });
 }

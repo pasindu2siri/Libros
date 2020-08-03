@@ -6,6 +6,7 @@ import 'package:Libros/providers/authProvider.dart';
 import 'package:Libros/services/auth.dart';
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter_star_rating/flutter_star_rating.dart';
+import 'package:Libros/pages/cart.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key key}) : super(key: key);
@@ -147,13 +148,13 @@ Widget createProfile(AsyncSnapshot asyncSnapshot) {
                     Text(asyncSnapshot.data['username'], style: _nameTextStyle),
               ),
               ConditionalBuilder(
-                  condition: (asyncSnapshot.data['rating'] != 0),
+                  condition: (asyncSnapshot.data['rating'] != 0.0),
                   builder: (context) => Container(
                         child: Text('Rating: ' + userRating.toString(),
                             style: _nameTextStyle),
                       )),
               ConditionalBuilder(
-                  condition: (asyncSnapshot.data['rating'] != 0),
+                  condition: (asyncSnapshot.data['rating'] != 0.0),
                   builder: (context) => Container(
                         child: StarRating(
                             rating: userRating,
@@ -289,10 +290,10 @@ Widget createItemList(BuildContext context, double width) {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.shopping_cart),
-                color: Colors.black,
-                onPressed: () {},
-              ),
+                  icon: Icon(Icons.shopping_cart),
+                  color: Colors.black,
+                  onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => CartPage()))),
               Text('My Cart'),
             ],
           ),
